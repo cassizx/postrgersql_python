@@ -8,8 +8,8 @@ con = psycopg2.connect(
   user="postgres", 
   password="password@74784", 
   host="109.68.213.220", 
-  port="5432"
-)
+  port="5432")
+
 print("Database opened successfully, exist tables:") 
 cur = con.cursor()
 cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
