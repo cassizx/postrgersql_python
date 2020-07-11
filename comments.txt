@@ -124,6 +124,8 @@ def select_table(query_table):
         print('Wrong table name, repeate')
         start()
 pass
+   
+#
 
 def his(text):
     query = (f'{text}')
