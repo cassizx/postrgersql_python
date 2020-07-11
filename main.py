@@ -17,9 +17,8 @@ con.commit()
 for row in resp:
     print (str(row[0]).split(', ') )
 
-
-file_with_ans = open("F:\/python\/postgressql\/1.txt", 'a') #режим дозаписи - a, w- открытие для перезаписи
-
+#Путь до файла, в него происходит запись данных, которые возвращаются при выборе готовой функции select
+file_with_ans = open("DISC:\/...\/....\/1.txt", 'a') #режим дозаписи - a, w- открытие для перезаписи
 
 #Функция, при вызове создаёт таблицу в базе с переданным названием
 def new_table(new_tab):
@@ -35,7 +34,6 @@ def new_table(new_tab):
     start()
 #Вызов функции. при вызове в качестве аргументы передаётся введённое название
 #new_table(new_table_name)
-
 def select_table(query_table):
     con.commit()
     query = (f'select * from {query_table}')
@@ -82,8 +80,7 @@ def his(text):
         start()
 pass
 
-def start():
-    
+def start(): 
     print('What do you want to do?' '\n' 'Options:' '\n'  'select - select * from <Input table name>' '\n'  'creat - Create new table' '\n' 'his - Your query' '\n' 'exit - Exit.'  )
     what_do=str(input())
 
@@ -107,7 +104,6 @@ def start():
     else:
         print('Dont know, repeat input')
         start()
-
 
 if __name__ == "__main__":
     start()
