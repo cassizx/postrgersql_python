@@ -2,37 +2,25 @@ import psycopg2
 import os
 from datetime import datetime #
 
-#Для выполнения запроса к базе, необходимо с ней соединиться и получить курсор Через курсор происходит дальнейшее общение в базой.
-con = psycopg2.connect(
-  database="dvdrental", 
-  user="postgres", 
-  password="password@74784", 
-  host="109.68.213.220", 
-  port="5432")
-
-print("Database opened successfully, exist tables:") 
-cur = con.cursor()
-cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-resp = cur.fetchall()
-con.commit()
-for row in resp:
-    print (str(row[0]).split(', ') )
+#Функция делает запрос к базе для 
+def exist_now_table():
+    cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
+    resp = cur.fetchall()
+    print("Exist now table:")
+    for row in resp:
+        print (str(row[0]).split(', ') )
+    start()
 pass
-#file_with_ans = open("F:\/python\/postgressql\/1.txt", 'a') #режим дозаписи - a, w- открытие для перезаписи
-#
-#Функция, при вызове создаёт таблицу в базе с переданным названием
+
+#Функция создании базы, при вызове в качестве аргументы передаётся введённое в start название, сейчас создаёт таблицу с 2 полями 
 def new_table(new_tab):
     try:
         query=(f"CREATE TABLE public.{new_tab} ( id int NOT NULL , testcomn varchar NULL)")
         cur.execute(query) #выполнение запроса
         con.commit() # отправка изменений
-        print(f'Table {new_tab} created. Exist table now:')
-        cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-        exist_now_tables = cur.fetchall()
-        log(exist_now_tables, query)
-
-        for row in exist_now_tables:
-            print (str(row[0]).split(', ') )     
+        print(f'Table {new_tab} created.') 
+        to_log_resp = exist_now_table()
+        log(to_log_resp, query) #Exist table now:
 
         start()
     except psycopg2.errors.DuplicateTable:
@@ -41,9 +29,8 @@ def new_table(new_tab):
         log(table_exist, query)
         start()
         pass    
-pass    
-#Вызов функции. при вызове в качестве аргументы передаётся введённое название
-#new_table(new_table_name)
+pass 
+
 def select_table(query_table):
     con.commit()
     query = (f'select * from {query_table}')
@@ -55,7 +42,7 @@ def select_table(query_table):
         response_column_name= cur.fetchall() #название колонок в таблице
         column_text_print = (f"Column name:\n{response_column_name}\n=======================================\n")
         print(column_text_print)
-        log(response, query_table)
+        log(response, query)
         for row in response:
             print ( str(row).split(',') )    
         con.commit()
@@ -64,7 +51,7 @@ def select_table(query_table):
         print('Wrong table name, repeate')
         start()
 pass
-
+# Функция выполнения произвольного запроса, принимает параметр введённый в start при вызове, отправляет запрос базе, получает и выводит ответ. 
 def his(text):
     query = (f'{text}')
     try:
@@ -81,23 +68,22 @@ def his(text):
         print(f'oshibka {cur}')
         start()
 pass
-
+#Функция записи лога, вызывается из других функций. Принимает 2 параметра resp - ответ на sql запрос из функции, sql_script -  сам sql запрос 
 def log(resp, sql_script='what_do'):
     date = datetime.date(datetime.now())
-    #print( (f"Test:  F:/python/postgressql/log{date}.txt") )
-    file_with_log = (f"F:/python/postgressql/log{date}.txt")
-    #print(file_with_log)
-    write_to_file = open( file_with_log , 'a') 
-    write_to_file.write(f"-----Start new query.-----")
-    write_to_file.write( f"Time: {datetime.now()}  \n Qeury: {sql_script} \n Respone: \n")
-    for twtr in resp:
+    file_with_log = (f"F:/python/postgressql/log{date}.txt") # создание названия файла 
+    
+    write_to_file = open( file_with_log , 'a') # открытие файла лога в режиме a - добавления записи в конец
+    write_to_file.write(f"-----Start new query.-----\n")
+    write_to_file.write( f"Time: {datetime.now()}  \nQeury: {sql_script} \nRespone:\n")
+    for twtr in resp: # Построчно записывает ответ в файл
         write_to_file.write( str(twtr) + '\n')
     write_to_file.write( '-----End of qeury.-----' + '\n')
     write_to_file.close()
 pass
-    
+#Функция запуска, запрашивает действие у пользователя    
 def start():
-    print(f"What do you want to do? \n Options: \n select - select * from <Input table name> \n creat - Create new table \n his - Your query \n exit - Exit." )
+    print(f"What do you want to do? \n Options: \n select - select * from <Input table name> \n creat - Create new table \n his - Your query \n exist - Show exist tables \n exit - Exit." )
     what_do = str(input())
     if  what_do == 'creat':
         print("New table name? " )
@@ -118,12 +104,35 @@ def start():
         except:
             pass
         print('Bye!') 
-        exit()   
+        exit()
+    elif what_do == 'exist':
+        exist_now_table()       
     else:
         print('Dont know, repeat input')
         start()
 pass
 #
 if __name__ == "__main__":
-    start()
+    try:
+        #Для выполнения запроса к базе, необходимо с ней соединиться и получить курсор.
+        con = psycopg2.connect(
+        database="dvdrental", 
+        user="postgres", 
+        password="password@74784", 
+        host="109.68.213.220", 
+        port="5432"
+        )
+        #Через курсор происходит дальнейшее общение в базой.
+        cur = con.cursor()
+        print("Database opened successfully, exist tables:") 
+        exist_now_table()
+        start()
+        pass
+    except psycopg2.OperationalError:
+        print('Connection eror, check all.')
+        pass
+
+
+
+   
 
