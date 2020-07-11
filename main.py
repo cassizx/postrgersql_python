@@ -3,10 +3,10 @@ import os
 
 #Для выполнения запроса к базе, необходимо с ней соединиться и получить курсор Через курсор происходит дальнейшее общение в базой.
 con = psycopg2.connect(
-  database="dvdrental", 
-  user="postgres", 
-  password="password@74784", 
-  host="109.68.213.220", 
+  database="", 
+  user="", 
+  password="", 
+  host="", 
   port="5432"
 )
 print("Database opened successfully, exist tables:") 
