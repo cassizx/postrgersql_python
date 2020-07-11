@@ -4,3 +4,4 @@ test.py
 .git
 for git
 test/test.py
+log*
