@@ -1,4 +1,4 @@
-# postrgerssql_python
+# postrgersql_python
 
 Postrgerssql + python psycopg2
 
