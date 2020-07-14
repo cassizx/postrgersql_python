@@ -1,4 +1,4 @@
-# postrgerssql_python
+# postrgersql_python
 
 Postrgersql + python psycopg2
 
@@ -19,14 +19,17 @@ port="5432"
 1) select - select * from <Input table name>
 Обычный select запрос, возвращает все поля в таблице.  
 
-2)creat - Create new table
+2) creat - Create new table
 Создаёт новую таблицу, название вводится после выбора этой функции.
 
-3)his - Your query
+3) his - Your query
 Введите ваш запрос.
 
-4)exist 
+4) exist 
 Вернёт названия существующих таблиц.
 
-5)exit - Exit.
+5) drop - Drop exist table
+Запросит ввод названия таблицы, далее удалит её из базы, если таблицы нет в базе вернёт соответствующие сообщение.
+
+5) exit - Exit.
 Выход.
