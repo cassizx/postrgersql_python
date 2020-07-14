@@ -3,5 +3,6 @@ test
 test.py
 .git
 for git
-test/test.py
+test*
 log*
+1
