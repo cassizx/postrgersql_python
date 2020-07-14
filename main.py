@@ -41,10 +41,14 @@ def select_table(query_table):
     query = (f'select * from {query_table}')
     query_column_name=(f" SELECT column_name FROM information_schema.columns WHERE table_name='{query_table}' " ) #запрос для получения названий колонок в таблице
     try:
+        time_start_qeury = datetime.now()
         cur.execute(query)
         response = cur.fetchall()
         cur.execute(query_column_name) 
         response_column_name= cur.fetchall() #название колонок в таблице
+        time_end_qeury = datetime.now()
+        time_execution_qeury = (time_end_qeury - time_start_qeury)
+        print(f"Запрос выполнен за {time_execution_qeury}")
         column_text_print = (f"Column name:\n{response_column_name}\n=======================================\n")
         print(column_text_print)
         log(response, query)
@@ -97,7 +101,7 @@ pass
 #Функция записи лога, вызывается из других функций. Принимает 2 параметра resp - ответ на sql запрос из функции, sql_script -  сам sql запрос 
 def log(resp, sql_script='what_do'):
     date = datetime.date(datetime.now())
-    file_with_log = (f"log{date}.txt") # создание названия файла 
+    file_with_log = (f"log{date}.log") # создание названия файла 
     
     write_to_file = open(file_with_log, 'a') # открытие файла лога в режиме a - добавления записи в конец
     write_to_file.write(f"-----Start new query.-----\n")
