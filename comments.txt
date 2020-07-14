@@ -57,6 +57,34 @@ con = psycopg2.connect(
         #file_with_ans.write(qw1_text)
 
 
+        #cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
+        #to_log_resp = cur.fetchall()
+
+
+#запрос на получкение всех существующих таблиц
+#exist_now_table()
+# cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
+# resp = cur.fetchall()
+# con.commit()
+# for row in resp:
+#     print (str(row[0]).split(', ') )
+#pass
+#file_with_ans = open("F:\/python\/postgressql\/1.txt", 'a') #режим дозаписи - a, w- открытие для перезаписи
+#
+
+
+
+        # for row in exist_now_tables:
+        #     print (str(row[0]).split(', ') )  
+
+
+
+
+
+
+
+
+work version
 -----
 import psycopg2
 import os
