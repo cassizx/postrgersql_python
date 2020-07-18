@@ -6,14 +6,14 @@ PostgreSQL + python + psycopg2
 
 <code> pip install psycopg2 </code>
 
-Подробнее о билиотеке psycopg2: https://pypi.org/project/psycopg2/
+<a href="https://pypi.org/project/psycopg2/" target="blank"> Подробнее о билиотеке psycopg2 </a>
 
 Для отображения ответа базы данных используется библиотека prettytable, 
 её так же потребуется установить перед запуском, команда для установки:
 
 <code>pip install PrettyTable</code>
 
-<a href="https://pypi.org/project/PrettyTable/" target="_blank"> Подробнее о билиотеке PrettyTable</a>
+<a href="https://pypi.org/project/PrettyTable/" target="blank"> Подробнее о билиотеке PrettyTable</a>
 
 Скрипт для подключения и работы с БД postgresql, для запуска потребуется создать файл 
 connection-data.txt указать параметры подключения:
