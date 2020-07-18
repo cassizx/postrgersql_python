@@ -127,32 +127,35 @@ pass
 
 #Функция запуска, запрашивает действие у пользователя    
 def start():
-    print(f"What do you want to do? \n Options: \n select - select * from <Input table name> \n creat - Create new table \n his - Your query \n exist - Show exist tables \n drop - Drop exist table \n exit - Exit." )
+    print('What do you want to do? \n Options: \n 1. select - select * from <Input table name> \n 2. create - Create new table') 
+    print(' 3. his - Your query \n 4. exist - Show exist tables \n 5. drop - Drop exist table \n 6. q - Exit.')
+    print('Enter name or enter number:')
     what_do = str(input())
-    if  what_do == 'creat':
-        print("New table name? " )
-        new_table_name=str(input())
-        new_table(new_table_name)
-    elif what_do == 'select':
+    if what_do == 'select' or what_do == '1':
         print('I can do select all, from which table?:')
         select_table_name=str(input())
         select_table(select_table_name)
-    elif what_do == 'his':
+    if  what_do == 'create' or what_do == '2':
+        print("New table name? " )
+        new_table_name=str(input())
+        new_table(new_table_name)    
+    elif what_do == 'his' or what_do == '3':
         print('Input your query:')
         text = str(input())
         his(text)
-    elif what_do == 'exist':
+    elif what_do == 'exist' or what_do == '4':
         exist_now_table()     
-    elif what_do == 'drop':                                     #Удаление таблицы
+    elif what_do == 'drop' or what_do == '5':                                     #Удаление таблицы
         print('Which table you want to drop?')
         input_drop_table_name= str(input())                     # Запрос на ввод названия таблицы
         drop_input_table(input_drop_table_name)                 # Вызов функции удаляющей таблицу с введённым названием
-    elif what_do == 'exit': 
+    elif what_do == 'q' or what_do == '6': 
         try:
             con.commit()
             con.close()
         except:
             pass
+        log(what_do, what_do)
         print('Bye!') 
         exit()
     else:
@@ -168,11 +171,14 @@ if __name__ == "__main__":
             host="109.68.213.220", port="5432"
             )        
         cur = con.cursor()                                                      #Через курсор происходит дальнейшее общение в базой.
-        print("Database opened successfully.") 
+        resp = (["Database opened successfully."])
+        print(resp[0])
+        log(resp, con)
         print(exist_now_table())                                                # Покажет сущуствующие таблицы и вызовит функцию start, при большом количестве таблиц
         #start() # Вызывается из exist_now_table()                              # закомментировать и расскомментировать start()
-        pass
-    except psycopg2.OperationalError:
+        #pass
+    except psycopg2.OperationalError as err:
+        log(err, con)
         print('Connection eror, check all.')
         pass
 pass
