@@ -1,5 +1,5 @@
+from datetime import datetime 
 import os
-from datetime import datetime #
 import psycopg2
 from prettytable import PrettyTable 
 from prettytable import from_db_cursor
@@ -18,20 +18,29 @@ def exist_now_table():
 pass
 
 
+#Функция для подсчёта времени выполнения запроса, принимает на вход 2 параметра, time_start - время начала выполнения запроса 
+# time_end - время получения ответа, возвращет вывод разницы, то есть примерное аремя выполнения.
+def calculation_execution_time(time_start, time_end):
+    execution_time = time_end - time_start
+    return print(f"Запрос выполнен за {execution_time}")
+
+
 #Функция создании базы, при вызове в качестве аргументы передаётся введённое в start название, сейчас создаёт таблицу с 2 полями 
 def new_table(new_tab):
+    query=(f"CREATE TABLE public.{new_tab} ( id serial NOT NULL , testcomn varchar(50) NULL)")
     try:
-        query=(f"CREATE TABLE public.{new_tab} ( id serial NOT NULL , testcomn varchar(50) NULL)")
+        time_start_qeury = datetime.now() 
         cur.execute(query)                                                                                          # Выполнение запроса
         con.commit()                                                                                                # Отправка изменений
+        time_end_qeury = datetime.now()
     except psycopg2.errors.DuplicateTable as err:
-        table_exist = (f"Table {new_tab} is alredy exist.")
-        print(table_exist)
+        print(f"Table {new_tab} is already exist.")
         log(err, query)
         con.commit()
         start()
     else:
-        to_log_resp = (f'Table {new_tab} created.') 
+        to_log_resp = (f'Table {new_tab} created.')
+        calculation_execution_time(time_start_qeury, time_end_qeury)
         log(to_log_resp, query)                                                                                    
         print(to_log_resp)
         start()
@@ -47,62 +56,74 @@ def select_table(query_table):
     try:
         cur.execute(query)
         reqested_table = from_db_cursor(cur) 
-        time_end_qeury = datetime.now()                                                                             # Время получения ответа
-        time_execution_qeury = (time_end_qeury - time_start_qeury)                                                  # Вычесление времени выполнения запроса
+        time_end_qeury = datetime.now()                                                                             # Время получения ответа                                                   
     except psycopg2.errors.UndefinedTable as err:
         con.commit()
-        print('Wrong table name, repeate')
+        print('Wrong table name, try again')
         log(err , query)
         exist_now_table()
     else:
-        print(f"Запрос выполнен за {time_execution_qeury}")
+        calculation_execution_time(time_start_qeury, time_end_qeury)            # Вычесление времени выполнения запроса
         log(reqested_table, query)
         print(reqested_table)    
         con.commit()
         start()
-pass
 
 
 #Функция для удаления таблицы
 def drop_input_table (table_name):
     try:
         query = (f"drop table {table_name}")
+        time_start_qeury = datetime.now()
         cur.execute(query)
         con.commit()     
-        resp =  f"Done."    
-        log(resp, query)
-        print(resp)
-        exist_now_table()       
+        resp = (f"Done.")
+        time_end_qeury = datetime.now()    
     except psycopg2.errors.UndefinedTable as err:
         log(err, query)         
-        print('Wrong table name, repeate')
+        print('Wrong table name, try again.')
         con.commit()
         return exist_now_table()
+    else:
+        calculation_execution_time(time_start_qeury, time_end_qeury)
+        print(resp)
+        log(resp, query)
+        exist_now_table()
 pass
 
 
 # Функция выполнения произвольного запроса, принимает параметр введённый в start при вызове, отправляет запрос базе, получает и выводит ответ. 
-def his(text):
-    query = (f'{text}')
+def his(reqest):
+    query = (f'{reqest}')
     try:
+        time_start_qeury = datetime.now()
         cur.execute(query)
         resp = from_db_cursor(cur)
-        if resp == None:
-            print ('Done')
-        log(resp, query)
-        #print (resp)
+        time_end_qeury = datetime.now()
+    except psycopg2.InterfaceError as err :
+        print(f'Exception {err}')
+        log(err, query)
         con.commit()
         start()
-    except psycopg2.InterfaceError as err :
-        print('OK')
-        print(f'oshibka {err}')
-        log(err, query)
-        start()
     except psycopg2.ProgrammingError as err: 
-        print(f'oshibka {err}')
+        print(f'Exception {err} , try again.')
         if err == 'psycopg2.ProgrammingError: no results to fetch':
-            print('Done')
+            print('Done.')
         log(err, query)
+        con.commit()
+        start()
+    else:
+        if resp == None:
+            print ('Done.')
+            calculation_execution_time(time_start_qeury, time_end_qeury)
+        else:
+            try:
+                calculation_execution_time(time_start_qeury, time_end_qeury)
+                print(resp)
+            except:
+                pass
+        log(resp, query)
+        con.commit()
         start()   
 pass
 
@@ -131,13 +152,13 @@ def start():
         select_table_name=str(input())
         select_table(select_table_name)
     if  what_do == 'create' or what_do == '2':
-        print("New table name? " )
+        print("Input new table name:" )
         new_table_name=str(input())
         new_table(new_table_name)    
     elif what_do == 'his' or what_do == '3':
         print('Input your query:')
-        text = str(input())
-        his(text)
+        reqest = str(input())
+        his(reqest)
     elif what_do == 'exist' or what_do == '4':
         exist_now_table()     
     elif what_do == 'drop' or what_do == '5':                                     #Удаление таблицы
@@ -160,16 +181,14 @@ pass
 
 
 if __name__ == "__main__":
-                    # database    user         password             host            port
-    #["dvdrental", "postgres", "password@74784", "109.68.213.220" , "5432"]
     try:
         file_with_data = open('connection-data.txt', 'rt')                                       #Открытие файла с реквизитами для подключения.
         read_connection_data = file_with_data.read()
         
         read_connection_data = read_connection_data.split('\n')
         con = psycopg2.connect(                                                           #Для выполнения запроса к базе, необходимо с ней соединиться и получить курсор.
-            database=read_connection_data[0], user=read_connection_data[1], password=read_connection_data[2], 
-            host=read_connection_data[3], port=read_connection_data[4]
+            database = read_connection_data[0], user = read_connection_data[1], password = read_connection_data[2], 
+            host = read_connection_data[3], port = read_connection_data[4]
             )        
         cur = con.cursor()                                                      #Через курсор происходит дальнейшее общение в базой.
         resp = ("Database opened successfully.")
